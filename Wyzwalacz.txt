@@ -1,0 +1,47 @@
+----------------------------------Wyzwalacz----------------------------------
+----------------------------------1 Nową tabela wypisującą liczbę osób na konkretnych stanowiskach(ID), następnie dodaje dwóch nowych pracowników.
+CREATE OR REPLACE PROCEDURE wykonaj2 (expr2 IN VARCHAR2) AS
+BEGIN
+    EXECUTE IMMEDIATE expr2;
+END;
+/
+CREATE OR REPLACE TRIGGER
+    zadanie_trigger
+AFTER INSERT OR UPDATE OR DELETE ON
+    pracownik
+FOR EACH ROW 
+    BEGIN
+    CASE
+        WHEN INSERTING THEN
+            INSERT INTO pracownik_log VALUES (SYSDATE, 'Dodano pracownika nr '  :NEW.ID_pracownika );
+        WHEN UPDATING THEN
+            INSERT INTO pracownik_log VALUES (SYSDATE, 'Zmieniono pracownika nr '  :NEW.ID_pracownika );
+        WHEN DELETING THEN
+            INSERT INTO pracownik_log VALUES (SYSDATE, 'Usunieto pracownika nr ' || :OLD.ID_pracownika );
+    END CASE;
+END;
+/
+
+INSERT INTO pracownik VALUES INSERT INTO Pracownik VALUES(16,2,15000 ,20 ,16 );
+UPDATE pracownik SET ID_pracownika = 2 WHERE Pensja > 1000;
+DELETE FROM pracownik WHERE Pensja = 3000;
+
+SELECT * FROM pracownik;
+SELECT * FROM pracownik_log;
+----------------------------------2---Kasowanie odpowiednich wierszy z tabeli podrzędnej po usunięciu wiersza z tabeli nadrzędnej
+CREATE OR REPLACE TRIGGER 
+    zadanie_wyzwalacz_trigger
+BEFORE DELETE ON
+    osoba
+FOR EACH ROW 
+BEGIN
+    DELETE FROM Pracownik WHERE ID_osoby  = (SELECT ID_osoby  FROM Osoba   WHERE ID_osoby  = :OLD.ID_osoby );
+
+    DELETE FROM Osoba WHERE id_osoby = :OLD.id_osoby;
+
+END;
+/
+
+DELETE FROM Pracownik WHERE id_osoby = 1;
+SELECT * FROM Pracownik WHERE id_osoby = 1;
+SELECT * FROM pracownik;
