@@ -1,0 +1,6 @@
+Diagram- Wszyscy uczestniczyli w tworzezniu 
+Baza danych- Każda osoba tworzyła tabele po cyzm połaczyliśmy je w jedność
+Inserty - Każda z osób była odpowiedzialna za stworzenie Insertów do 3 tabel w sumie 12 tabel
+Kursory -Illia Yanchenko Konrad Gliński
+Widoki - Kyrylo Stupatskyi Karol Górnicki
+Wyzwalacze - Wspólna praca
