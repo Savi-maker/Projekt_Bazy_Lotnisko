@@ -1,0 +1,333 @@
+-----------------------------------------------------------------------------------------|
+--------------------Project z przedmiotu 'BAZY DANYCH'-----------------------------------|
+-----------------------------------------------------------------------------------------|
+--------------------Zepol realizujacy:---------------------------------------------------|
+--------------------Illia Yanchenko------------------------------------------------------|
+--------------------Karol Górnicki-------------------------------------------------------|
+--------------------Konrad Glinski-------------------------------------------------------|
+--------------------Kyrylo Stupatskyi----------------------------------------------------|
+-----------------------------------------------------------------------------------------|
+--------------------Grupa: 2ID12B--------------------------------------------------------|
+-----------------------------------------------------------------------------------------|
+
+
+----------------------------------------------Tworzenie tabel--------------------------------------
+CREATE TABLE Osoba 
+(
+	ID_osoby NUMERIC NOT NULL,
+	Imie VARCHAR(25) NOT NULL,
+	Nazwisko VARCHAR(35) NOT NULL,
+	Wiek VARCHAR(3) NOT NULL,
+	Telefon	VARCHAR(20) NOT NULL CONSTRAINT telefon_unique UNIQUE,
+	Pesel VARCHAR(20) NOT NULL CONSTRAINT osoba_unique UNIQUE,
+	PRIMARY KEY(ID_osoby)
+);
+
+
+CREATE TABLE Klient
+(
+	ID_klienta NUMERIC NOT NULL,
+	Znizka VARCHAR(10),
+	ID_osoby NUMERIC,
+    CONSTRAINT fk_klient_osoby FOREIGN KEY(ID_osoby) REFERENCES Osoba(ID_osoby),
+	PRIMARY KEY(ID_klienta)
+);
+
+CREATE TABLE Stanowisko
+(
+	ID_stanowisko NUMERIC NOT NULL,
+	Nazwa VARCHAR(50) NOT NULL,
+	Opis VARCHAR(200),
+	PRIMARY KEY(ID_stanowisko)
+);
+
+CREATE TABLE Pracownik
+(
+	ID_pracownika NUMERIC NOT NULL,
+	Staz VARCHAR(15),
+	Pensja VARCHAR (7) NOT NULL CONSTRAINT pensja_check CHECK(Pensja>=1226),
+	ID_osoby NUMERIC,
+	ID_stanowisko NUMERIC,
+    CONSTRAINT fk_pracownika_osoby FOREIGN KEY(ID_osoby) REFERENCES Osoba(ID_osoby),
+    CONSTRAINT fk_pracownika_stanowisko FOREIGN KEY(ID_stanowisko) REFERENCES Stanowisko(ID_stanowisko),
+	PRIMARY KEY(ID_pracownika)
+);
+
+
+CREATE TABLE Badania
+(
+	ID_badania NUMERIC NOT NULL,
+	Zezwolenie_na_pilotowanie VARCHAR(20) CONSTRAINT zezw_check CHECK(Zezwolenie_na_pilotowanie = 'TAK' OR Zezwolenie_na_pilotowanie = 'NIE'),
+	ID_osoby NUMERIC,
+    CONSTRAINT fk_badania_osoby FOREIGN KEY(ID_osoby) REFERENCES Osoba(ID_osoby),
+	PRIMARY KEY(ID_badania)
+);
+
+
+CREATE TABLE Pilot
+(
+	ID_pilota NUMERIC NOT NULL,
+	Staz VARCHAR(15),
+	ID_osoby NUMERIC,
+	ID_badania NUMERIC,
+    CONSTRAINT fk_pilota_osoby FOREIGN KEY(ID_osoby) REFERENCES Osoba(ID_osoby),
+    CONSTRAINT fk_pilota_badania FOREIGN KEY(ID_badania) REFERENCES Badania(ID_badania),
+	PRIMARY KEY(ID_pilota)
+);
+
+CREATE TABLE Firma_lotnicza 
+(	
+	ID_firmy NUMERIC NOT NULL,
+	Nazwa_firmy VARCHAR(40) NOT NULL,
+	Rok_powstania VARCHAR(20) NOT NULL,
+	Ranking VARCHAR(20) NOT NULL,
+	PRIMARY KEY(ID_firmy)
+);
+
+CREATE TABLE Ubezpieczenie
+(
+	ID_ubezpieczenia NUMERIC NOT NULL,
+	Kategoria VARCHAR(40) NOT NULL,	
+	Cena NUMERIC NOT NULL,
+	PRIMARY KEY(ID_ubezpieczenia)
+);	
+
+CREATE TABLE Bilet
+(
+	ID_biletu NUMERIC NOT NULL,
+	ID_klienta NUMERIC,
+	ID_ubezpieczenia NUMERIC,
+    CONSTRAINT fk_biletu_klienta FOREIGN KEY(ID_klienta) REFERENCES Klient(ID_klienta),
+    CONSTRAINT fk_biletu_ubezpieczenia FOREIGN KEY(ID_ubezpieczenia) REFERENCES Ubezpieczenie(ID_ubezpieczenia),
+	PRIMARY KEY(ID_biletu)
+);
+
+CREATE TABLE Samolot 
+(
+	ID_samolotu NUMERIC NOT NULL,
+	Model VARCHAR(50),
+	Pojemnosc NUMERIC(15),
+	ID_firmy NUMERIC,
+    CONSTRAINT fk_samolotu_firmy FOREIGN KEY(ID_firmy) REFERENCES Firma_lotnicza(ID_firmy),
+	PRIMARY KEY(ID_samolotu)
+);
+
+CREATE TABLE Obsluga_samolotu
+(
+	ID_obslugi NUMERIC NOT NULL,
+	Data_ostatniej_obslugi DATE NOT NULL,
+	Stan VARCHAR(15),
+	ID_samolotu NUMERIC,
+CONSTRAINT fk_obslugi_samolotu FOREIGN KEY(ID_samolotu) REFERENCES Samolot(ID_samolotu),
+	PRIMARY KEY(ID_obslugi)
+);
+
+CREATE TABLE Lotnisko
+(
+	ID_lotniska NUMERIC NOT NULL,
+	Miasto VARCHAR(25) NOT NULL,
+	Liczba_pasow_startowych VARCHAR(4) NOT NULL,
+	PRIMARY KEY(ID_lotniska)
+); 
+----------------------------------------------Inserty--------------------------------------
+
+------------------------------------------------------------------------------------------------Osoba (NR 1/12)
+INSERT INTO Osoba VALUES(1,'Anna','Ciosk',28,'+48(41)344-54-27','81050854796');
+INSERT INTO Osoba VALUES(2,'Krzysztof','Kowalski', 30, '+48(41)354-28-64','73082823846');
+INSERT INTO Osoba VALUES(3,'Mariusz','Piotrowski',40, '+48 913 717 668', '69121868745');
+INSERT INTO Osoba VALUES(4,'Tadeusz','Maliniak',31,'+48510232210','78100864875');
+INSERT INTO Osoba VALUES(5,'Karol','Wojciechowski',50,'+48(41)378-64-27','59010565847');
+INSERT INTO Osoba VALUES(6,'Maciej','Radecki',27,'+48607564218','82112554796');
+INSERT INTO Osoba VALUES(7,'Paweł','Gruszczyński',50, '+48606487537','80031854796');
+INSERT INTO Osoba VALUES(8,'Paweł','Laprus',34, '+48(41)346-15-78','75101979621');
+INSERT INTO Osoba VALUES(9,'Robert','Słoma',45, '+48(25)1919590','64072959621');
+INSERT INTO Osoba VALUES(10,'Kamila','Baran',35, '+48(86)9529190','74062979621');
+INSERT INTO Osoba VALUES(11,'Albert','Drozdowski',29, '+48 43 469 51 76','80090156812');
+INSERT INTO Osoba VALUES(12,'Henryk','Bista',32,'+48786512458','77040368154');
+INSERT INTO Osoba VALUES(13,'Marek','Makuszyński',30, '+48888123654','79010187769');
+INSERT INTO Osoba VALUES(14,'Zbigniew','Michta',26, '+48511325568','83060650012');
+INSERT INTO Osoba VALUES(15,'Katarzyna','Michalska',54,'+48(41)313-77-66','55111597532');
+
+------------------------------------------------------------------------------------------------Klient (NR 2/12)
+INSERT INTO Klient VALUES(1,'1%',8);
+INSERT INTO Klient VALUES(2,'3%',3);
+INSERT INTO Klient VALUES(3,'5%',11);
+INSERT INTO Klient VALUES(4,'7%',4);
+INSERT INTO Klient VALUES(5,'9%',13);
+INSERT INTO Klient VALUES(6,'10%',6);
+INSERT INTO Klient VALUES(7,'12%',7);
+INSERT INTO Klient VALUES(8,'14%',10);
+INSERT INTO Klient VALUES(9,'16%',2);
+INSERT INTO Klient VALUES(10,'18%',14);
+INSERT INTO Klient VALUES(11,'20%',9);
+INSERT INTO Klient VALUES(12,'2%',15);
+INSERT INTO Klient VALUES(13,'4%',1);
+INSERT INTO Klient VALUES(14,'6%',5);
+INSERT INTO Klient VALUES(15,'6%',12);
+
+------------------------------------------------------------------------------------------------Stanowisko (NR 3/12)
+INSERT INTO Stanowisko VALUES(1,'Wlasciciel','Posiadacz lotniska');
+INSERT INTO Stanowisko VALUES(2,'Kapitan(pilot)','Pilot w ogólnym rozumieniu odpowiada za bezpieczne i właściwe sterowanie samolotem');
+INSERT INTO Stanowisko VALUES(3,'Mechanik lotniczy','Zajmuje się serwisowaniem (wykonywaniem napraw i bieżącym utrzymaniem) oraz kontrolowaniem stanu technicznego samolotu');
+INSERT INTO Stanowisko VALUES(4,'Kontroler Ruchu Lotniczego','Czuwa nad bezpieczeństwem samolotów znajdujących się w przestrzeni powietrzne');
+INSERT INTO Stanowisko VALUES(5,'Agent Obsługi Pasażerskiej','Zajmuje się odprawą biletowo');
+INSERT INTO Stanowisko VALUES(6,'Pracownik Obsługi Płytowej','Zajmuje się obsługą sprzętu lotniskowego, sortowaniem oraz załadunkiem i rozładunkiem bagażu');
+INSERT INTO Stanowisko VALUES(7,'Służba Ochrony Lotniska','Zapewnia bezpieczeństwo pasażerom i pracownikom lotniska oraz prowadzi kontrolę bezpieczeństwa pasażerów, pracowników i bagażu');
+INSERT INTO Stanowisko VALUES(8,'Straż Graniczna','Służba państwowa: prowadzi kontrolę graniczną, nadzoruje pracę Służby Ochrony Lotniska oraz zapewnia wsparcie pirotechniczne w sytuacjach zagrożenia');
+INSERT INTO Stanowisko VALUES(9,'Koordynator Obsługi Terminalowej','Nadzoruje przebieg płynności obsługi pasażerów i ich bagażu w terminalu');
+INSERT INTO Stanowisko VALUES(10,'Konserwator powierzchni płaskich','Zajmuje sie utrzymaniem czystości na lotnisku');
+INSERT INTO Stanowisko VALUES(11,'Operator specjalistycznych maszyn','Zajmuje sie transportem smaolotów i ich ustawieniem na pasie');
+INSERT INTO Stanowisko VALUES(12,'Operatorzy wózków','Zajmuje sie transporten bagaży');
+INSERT INTO Stanowisko VALUES(13,'Nadzór obsługi naziemnej','Zajmuje sie Logistycznym działaniem rozladunku i zaladunku');
+INSERT INTO Stanowisko VALUES(14,'Sokolnik','Dba aby w strefie operacji lotniczych nie znalazły sie żadne zwierzeta');
+INSERT INTO Stanowisko VALUES(15,'Pracownik Zespołu „Need Help?','Osoba zajmująca sie pomocą dla osob na lotnisku ');
+------------------------------------------------------------------------------------------------Pracownik (NR 4/12)
+INSERT INTO Pracownik VALUES(1,'2 Lata',15000 ,9 ,1 );
+INSERT INTO Pracownik VALUES(2,'5 Lat',10000 ,2 ,2 );
+INSERT INTO Pracownik VALUES(3,'3 Lata',6000 ,4 ,3 );
+INSERT INTO Pracownik VALUES(4,'7 Lat',7000 ,12 ,4 );
+INSERT INTO Pracownik VALUES(5,'5 Lat',4800 ,14 ,5 );
+INSERT INTO Pracownik VALUES(6,'3 Lata',5000 ,3 ,6 );
+INSERT INTO Pracownik VALUES(7,'5 Lat',4500 ,6 ,7 );
+INSERT INTO Pracownik VALUES(8,'6 Lat',4000 ,10 ,8 );
+INSERT INTO Pracownik VALUES(9,'3 Lata',3500 ,13 ,9 );
+INSERT INTO Pracownik VALUES(10,'7 Lat',3000 ,5 ,10 );
+INSERT INTO Pracownik VALUES(11,'4 Lata',4000 ,1 ,11 );
+INSERT INTO Pracownik VALUES(12,'10 Lat',3000 ,7 ,12 );
+INSERT INTO Pracownik VALUES(13,'2 Lata',4500 ,8 ,13 );
+INSERT INTO Pracownik VALUES(14,'12 Lat',3500 ,15 ,14 );
+INSERT INTO Pracownik VALUES(15,'Rok',3000 ,11 ,15 );
+------------------------------------------------------------------------------------------------Badania (NR 5/12)
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (1,'NIE');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (2,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (3,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (4,'NIE');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (5,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (6,'NIE');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (7,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (8,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (9,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (10,'NIE');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (11,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (12,'NIE');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (13,'TAK');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (14,'NIE');
+INSERT INTO Badania(ID_badania,Zezwolenie_na_pilotowanie) VALUES (15,'NIE');
+
+------------------------------------------------------------------------------------------------Pilot (NR 6/12)
+INSERT INTO Pilot VALUES(1, '15 miesięcy', 1, 12);
+INSERT INTO Pilot VALUES(2, '12 miesięcy', 9, 13);
+INSERT INTO Pilot VALUES(3, '9 miesięcy', 8, 9);
+INSERT INTO Pilot VALUES(4, '3 miesięcy', 4, 15);
+INSERT INTO Pilot VALUES(5, '26 miesięcy', 15, 3);
+INSERT INTO Pilot VALUES(6, '33 miesięcy', 12, 8);
+INSERT INTO Pilot VALUES(7, '22 miesięcy', 1, 5);
+INSERT INTO Pilot VALUES(8, '16 miesięcy', 7, 11);
+INSERT INTO Pilot VALUES(9, '29 miesięcy', 6, 7);
+INSERT INTO Pilot VALUES(10, '3 miesięcy', 2, 4);
+INSERT INTO Pilot VALUES(11, '43 miesięcy', 14, 2);
+INSERT INTO Pilot VALUES(12, '31 miesięcy', 3, 6);
+INSERT INTO Pilot VALUES(13, '47 miesięcy', 11, 1);
+INSERT INTO Pilot VALUES(14, '16 miesięcy', 10, 14);
+INSERT INTO Pilot VALUES(15, '8 miesięcy', 15, 10);
+
+------------------------------------------------------------------------------------------------Firma_lotnicza (NR 7/12)
+INSERT INTO Firma_lotnicza VALUES(1,'Pro_Firma','1990','1');
+INSERT INTO Firma_lotnicza VALUES(2,'Top_AIR','2000','2');
+INSERT INTO Firma_lotnicza VALUES(3,'ZEBRA','1991','3');
+INSERT INTO Firma_lotnicza VALUES(4,'Pro_Firma','1990','4');
+INSERT INTO Firma_lotnicza VALUES(5,'AIR_GO','2000','5');
+INSERT INTO Firma_lotnicza VALUES(6,'Lotnisko 1','1989','6');
+INSERT INTO Firma_lotnicza VALUES(7,'Delta Air Lines','1990','7');
+INSERT INTO Firma_lotnicza VALUES(8,'Emirates','2005','8');
+INSERT INTO Firma_lotnicza VALUES(9,'Air France-KLM','1995','9');
+INSERT INTO Firma_lotnicza VALUES(10,'American Airlines Group','1999','10');
+INSERT INTO Firma_lotnicza VALUES(11,'China Southern Airlines','1994','11');
+INSERT INTO Firma_lotnicza VALUES(12,'All Nippon Airways','1990','12');
+INSERT INTO Firma_lotnicza VALUES(13,'Southwest Airlines','1990','13');
+INSERT INTO Firma_lotnicza VALUES(14,'International Airlines Group','1992','14');
+INSERT INTO Firma_lotnicza VALUES(15,'United Continental Holdings','2021','15');
+
+------------------------------------------------------------------------------------------------Ubezpieczenie (NR 8/12)
+INSERT INTO Ubezpieczenie VALUES(1,'Zdrowotne', 50);
+INSERT INTO Ubezpieczenie VALUES(2,'Od ryzyk nazwanych',100 );
+INSERT INTO Ubezpieczenie VALUES(3,'Elementy stałe',35 );
+INSERT INTO Ubezpieczenie VALUES(4,'Od wypadków ', 20);
+INSERT INTO Ubezpieczenie VALUES(5,'Na pobyt w szpitalu',25 );
+INSERT INTO Ubezpieczenie VALUES(6,'uszczerbek na zdrowiu',15 );
+INSERT INTO Ubezpieczenie VALUES(7,'Operacjie chirurgiczne',20 );
+INSERT INTO Ubezpieczenie VALUES(8,'Ubezpieczenie onkologiczne',25 );
+INSERT INTO Ubezpieczenie VALUES(9,'Śmierć NNW',10 );
+INSERT INTO Ubezpieczenie VALUES(10,'Udar mózgu zawał serca',25 );
+INSERT INTO Ubezpieczenie VALUES(11,'Uszkodzenia Bagażu',20 );
+INSERT INTO Ubezpieczenie VALUES(12,'Zaginiecia Bagażu',25 );
+INSERT INTO Ubezpieczenie VALUES(13,'Ubezpieczenia lotu',50 );
+INSERT INTO Ubezpieczenie VALUES(14,'Ubezpieczenie opóźnienia lotu',100 );
+INSERT INTO Ubezpieczenie VALUES(15,'Ubezpieczenie na wakacje',90 );
+------------------------------------------------------------------------------------------------Bilet (NR 9/12)
+INSERT INTO Bilet VALUES(1, 8, 6);
+INSERT INTO Bilet VALUES(2, 4, 9);
+INSERT INTO Bilet VALUES(3, 13, 6);
+INSERT INTO Bilet VALUES(4, 2, 6);
+INSERT INTO Bilet VALUES(5, 14, 9);
+INSERT INTO Bilet VALUES(6, 9, 1);
+INSERT INTO Bilet VALUES(7, 7, 8);
+INSERT INTO Bilet VALUES(8, 11, 7);
+INSERT INTO Bilet VALUES(9, 6, 5);
+INSERT INTO Bilet VALUES(10, 5, 1);
+INSERT INTO Bilet VALUES(11, 15, 4);
+INSERT INTO Bilet VALUES(12, 12, 5);
+INSERT INTO Bilet VALUES(13, 3, 6);
+INSERT INTO Bilet VALUES(14, 1, 7);
+INSERT INTO Bilet VALUES(15, 10, 3);
+
+------------------------------------------------------------------------------------------------Samolot (NR 10/12)
+INSERT INTO Samolot VALUES(1, 'Aerospatiale/Alenia', 120, 4);
+INSERT INTO Samolot VALUES(2, 'Airbus S.A.S', 130, 7);
+INSERT INTO Samolot VALUES(3, 'Bell/Agusta Aerospace Company', 120, 11);
+INSERT INTO Samolot VALUES(4, 'Boeing', 250, 15);
+INSERT INTO Samolot VALUES(5, 'Bombardier Aerospace', 150, 12);
+INSERT INTO Samolot VALUES(6, 'British Aerospace', 200, 10);
+INSERT INTO Samolot VALUES(7, 'British Aircraft Corporation', 140, 14);
+INSERT INTO Samolot VALUES(8, 'Britten-Norman', 200, 1);
+INSERT INTO Samolot VALUES(9, 'Cessna Aircraft', 140, 2);
+INSERT INTO Samolot VALUES(10, 'Czech Aircraft Works', 100, 3);
+INSERT INTO Samolot VALUES(11, 'Dassault Aviation', 150, 9);
+INSERT INTO Samolot VALUES(12, 'De Havilland', 160, 8);
+INSERT INTO Samolot VALUES(13, 'De Havilland Canada', 200, 5);
+INSERT INTO Samolot VALUES(14, 'EADS Socata', 150, 6);
+INSERT INTO Samolot VALUES(15, 'Embraer (Empresa Brasileira de Aeronautica) S.A.', 100, 13);
+
+------------------------------------------------------------------------------------------------Obsluga_samolotu (NR 11/12)
+INSERT INTO Obsluga_samolotu VALUES(1, DATE '2021-1-06', 'Dobry',1);
+INSERT INTO Obsluga_samolotu VALUES(2, DATE '2021-10-25', 'Bardzo dobry',2);
+INSERT INTO Obsluga_samolotu VALUES(3, DATE '2018-11-13', 'zły',3);
+INSERT INTO Obsluga_samolotu VALUES(4, DATE '2019-08-15', 'do naprawy',4);
+INSERT INTO Obsluga_samolotu VALUES(5, DATE '1912-10-25', 'Uziemoiony',5);
+INSERT INTO Obsluga_samolotu VALUES(6, DATE '2020-03-15', 'Dobry',6);
+INSERT INTO Obsluga_samolotu VALUES(7, DATE '2021-09-29', 'Bardzo dorby',7);
+INSERT INTO Obsluga_samolotu VALUES(8, DATE '2018-03-09', 'Do naprawy',8);
+INSERT INTO Obsluga_samolotu VALUES(9, DATE '2020-11-02', 'Dobry',9);
+INSERT INTO Obsluga_samolotu VALUES(10, DATE '2020-11-06', 'Dobry',10);
+INSERT INTO Obsluga_samolotu VALUES(11, DATE '2021-11-18', 'Bardzo dorby',11);
+INSERT INTO Obsluga_samolotu VALUES(12, DATE '2017-03-19', 'zły',12);
+INSERT INTO Obsluga_samolotu VALUES(13, DATE '2020-10-01', 'Dobry',13);
+INSERT INTO Obsluga_samolotu VALUES(14, DATE '2019-08-11', 'do naprawy',14);
+INSERT INTO Obsluga_samolotu VALUES(15, DATE '2021-02-09', 'Dobry',15);
+
+------------------------------------------------------------------------------------------------Lotnisko (NR 12/12)
+INSERT INTO Lotnisko VALUES (1,'Kielce','2');
+INSERT INTO Lotnisko VALUES (2,'Warszawa','3');
+INSERT INTO Lotnisko VALUES (3,'Krakуw','5');
+INSERT INTO Lotnisko VALUES (4,'Berlin','4');
+INSERT INTO Lotnisko VALUES (5,'Monachium','2');
+INSERT INTO Lotnisko VALUES (6,'Madryt','1');
+INSERT INTO Lotnisko VALUES (7,'Zagrzeb','5');
+INSERT INTO Lotnisko VALUES (8,'Kijow','6');
+INSERT INTO Lotnisko VALUES (9,'Paryz','3');
+INSERT INTO Lotnisko VALUES (10,'Rzym','2');
+INSERT INTO Lotnisko VALUES (11,'Londyn','1');
+INSERT INTO Lotnisko VALUES (12,'Szczecin','6');
+INSERT INTO Lotnisko VALUES (13,'Barcelona','2');
+INSERT INTO Lotnisko VALUES (14,'Amsterdam','6');
+INSERT INTO Lotnisko VALUES (15,'Tallin','4');
