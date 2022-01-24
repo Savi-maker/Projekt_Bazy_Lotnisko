@@ -1,0 +1,90 @@
+----------------------------------------------Kursory-----------------------------------------------
+----------------------1-która policzy wartość średnią i sprawdza imie
+CREATE OR REPLACE FUNCTION srednia_for 
+RETURN number
+IS
+srednia number;
+temp number(4);
+CURSOR kyrsor_sr is
+SELECT Pensja FROM (
+SELECT AVG(Pracownik.pensja) Pensja FROM Pracownik
+INNER JOIN Osoba USING(ID_Osoby)
+WHERE OSOBA.IMIE = 'Krzysztof');
+iterator number;
+BEGIN
+srednia :=0;
+FOR item in kyrsor_sr LOOP
+srednia := item.pensja + srednia;
+END LOOP;
+RETURN srednia;
+END;
+/
+COMMIT;
+
+SELECT srednia_for() FROM dual;
+
+----------------------2-Policzy wartość średnią pojemnosci i sprawdza stan samolotu
+CREATE OR REPLACE FUNCTION srednia_samolot
+RETURN number
+IS
+srednia number;
+temp number(4);
+CURSOR kyrsor_sr is
+SELECT Pojemnosc FROM (
+SELECT AVG(Samolot.Pojemnosc) Pojemnosc FROM Samolot
+INNER JOIN Obsluga_samolotu USING(ID_samolotu )
+WHERE Obsluga_samolotu.Stan = 'zły');
+iterator number;
+BEGIN
+srednia :=0;
+FOR item in kyrsor_sr LOOP
+srednia := item.Pojemnosc + srednia;
+END LOOP;
+RETURN srednia;
+END;
+/
+COMMIT;
+
+SELECT srednia_samolot() FROM dual;
+----------------------3-Liczy srednia cene ubezpeczenia dla 10 pierwszych ubezpieczen
+CREATE OR REPLACE FUNCTION srednia_ubezpieczenie
+RETURN number
+IS
+srednia number;
+temp number(4);
+CURSOR kursor is
+SELECT Cena FROM (
+SELECT AVG(Ubezpieczenie.Cena) Cena FROM Ubezpieczenie
+INNER JOIN Bilet USING(ID_ubezpieczenia )
+WHERE Bilet.ID_klienta < 10);
+iterator number;
+BEGIN
+srednia :=0;
+FOR item in kursor LOOP
+srednia := item.Cena + srednia;
+END LOOP;
+RETURN srednia;
+END;
+/
+COMMIT;
+
+SELECT srednia_ubezpieczenie() FROM dual;
+----------------------4-Sumuje ilość pasów startowych na wszystkich lotniskach
+CREATE OR REPLACE FUNCTION liczba_pasow
+RETURN number
+IS
+srednia number;
+temp number(4);
+CURSOR kursor is
+SELECT Liczba_pasow_startowych FROM Lotnisko;
+BEGIN
+srednia :=0;
+FOR item in kursor LOOP
+srednia := item.Liczba_pasow_startowych + srednia;
+END LOOP;
+RETURN srednia;
+END;
+/
+COMMIT;
+
+SELECT liczba_pasow() FROM dual;
