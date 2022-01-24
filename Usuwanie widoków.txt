@@ -1,0 +1,6 @@
+DROP VIEW Pracownik_osoba_widok;
+DROP VIEW Pracownik_osoba_widok_wiecje_10000;
+DROP VIEW liotnisko_widok;
+DROP VIEW pracownicy_najbardziej_dochodowi;
+DROP VIEW lotnisko_firma_samolot;
+DROP VIEW Pracownik_staz_widok;
