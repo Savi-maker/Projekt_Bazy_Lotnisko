@@ -45,3 +45,27 @@ END;
 DELETE FROM Pracownik WHERE id_osoby = 1;
 SELECT * FROM Pracownik WHERE id_osoby = 1;
 SELECT * FROM pracownik;
+----------------------------------3---Usuwanie odpowiednich wierszy spelniajacych warunki  zmienianie i dodawanie
+CREATE OR REPLACE TRIGGER
+    triger23
+AFTER INSERT OR UPDATE OR DELETE ON
+    lotnisko;
+FOR EACH ROW 
+    BEGIN
+    CASE
+        WHEN INSERTING THEN
+            INSERT INTO lotnisko_log VALUES ( 'Dodano Lotnisko nr '  :NEW.ID_lotniska );
+        WHEN UPDATING THEN
+            INSERT INTO lotnisko_log VALUES ( 'Zmieniono Lotnisko nr '  :NEW.ID_lotniska );
+        WHEN DELETING THEN
+            INSERT INTO lotnisko_log VALUES ( 'Usunieto Lotnisko nr ' || :OLD.ID_lotniska );
+    END CASE;
+END;
+/
+
+INSERT INTO lotnisko VALUES INSERT INTO Lotnisko VALUES(16,'San Francisco' ,7 );
+UPDATE lotnisko SET Liczba_pasow_startowych  = 2 WHERE Miasto = 'Madryt';
+DELETE FROM lotnisko WHERE Liczba_pasow_startowych  = 3;
+
+SELECT * FROM lotnisko;
+SELECT * FROM lotnisko_log;
