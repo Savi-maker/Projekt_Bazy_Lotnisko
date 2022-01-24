@@ -1,0 +1,47 @@
+----------------------------------------------Widoki-----------------------------------------------
+CREATE OR REPLACE FORCE VIEW liotnisko_widok 
+AS SELECT Miasto, Liczba_pasow_startowych FROM Lotnisko;
+SELECT * FROM liotnisko_widok;
+
+------------------------------Widok zawierajacy informacje o najbardziej dochodowym pracowniku
+CREATE VIEW Pracownik_osoba_widok
+AS SELECT Imie, Nazwisko, Wiek FROM Osoba o
+JOIN Pracownik p ON p.ID_osoby = o.ID_osoby
+WHERE p.Pensja = (SELECT MAX(Pensja) FROM Pracownik)
+ORDER BY o.ID_osoby;
+SELECT * FROM Pracownik_osoba_widok;
+
+------------------------------Widok zawierajacy informacje o najbardziej dochodowym pracowniku ktora ma ponad 10000
+CREATE VIEW Pracownik_osoba_widok_wiecje_10000
+AS SELECT Imie, Nazwisko, Wiek FROM Osoba o
+JOIN Pracownik p ON p.ID_osoby = o.ID_osoby
+WHERE p.Pensja > 1000 
+ORDER BY o.ID_osoby;
+
+SELECT * FROM Pracownik_osoba_widok_wiecje_10000;
+
+--------------------Widok który agreguje dane o stanowisku w których pracują pracownicy najbardziej dochodowi
+   CREATE VIEW pracownicy_najbardziej_dochodowi
+AS SELECT  Nazwa, Opis FROM Stanowisko a
+JOIN Pracownik p ON p.ID_stanowisko = a.ID_stanowisko
+   WHERE p.Pensja  = (SELECT MAX(Pensja )FROM Pracownik)
+order by a.ID_stanowisko;
+
+   SELECT * FROM pracownicy_najbardziej_dochodowi;
+
+--------------------Widok który agreguje dane o firmie gdzie pojemnosc samoloyu > 100
+   CREATE VIEW lotnisko_firma_samolot
+AS SELECT Nazwa_firmy,Rok_powstania FROM Firma_lotnicza a
+JOIN Samolot p ON p.ID_firmy = a.ID_firmy
+   WHERE p.Pojemnosc  > 100
+order by a.ID_firmy;
+
+   SELECT * FROM lotnisko_firma_samolot;
+
+------------------------------Widok zawierający informajcje o stazu powyzej sredniej pracowników
+CREATE VIEW Pracownik_staz_widok
+AS SELECT Imie, Nazwisko FROM Osoba o
+JOIN Pracownik p ON p.ID_osoby = o.ID_osoby
+WHERE p.Staz > (SELECT AVG(Staz) FROM Pracownik)
+ORDER BY o.ID_osoby;
+SELECT * FROM Pracownik_staz_widok;
